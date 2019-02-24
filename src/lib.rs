@@ -56,7 +56,7 @@
 
     }
 
-    mod generics_yaml_deserializer {
+    pub mod generics_yaml_deserializer {
 
         use serde::{de, Deserialize, Deserializer, Serialize, Serializer};
 
