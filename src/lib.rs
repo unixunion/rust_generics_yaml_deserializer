@@ -31,7 +31,7 @@
 
             let b = r#"---
     ptr:
-      a: 1
+      a: 10
       b: 2
             "#;
 
@@ -42,6 +42,13 @@
                 Ptr::Owned(_) => {println!("error")}
             };
 
+
+            let resultb: Outer<ExternalStructB> = serde_yaml::from_str(b).unwrap();
+            match resultb.ptr {
+                Ptr::Owned(e) => {assert_eq!(10, e.a);},
+                Ptr::Ref(e) => {println!("error")},
+                Ptr::Owned(_) => {println!("error")}
+            };
 //            let resultb: Outer<ExternalStructB> = serde_yaml::from_str(b).unwrap();
 //            assert_eq!(1, resultb.ptr.a);
 
@@ -80,15 +87,34 @@
             }
         }
 
-//        fn readconfig<T>(config: String) -> Result<T, Box<std::error::Error>>  {
+
+//        fn readfile<T>(filename: String) -> Result<Box<T>, Box<std::error::Error>> {
+//            let f = std::fs::File::open(filename)?;
+//            let config_data: Outer<T> = serde_yaml::from_reader(f)?;
+//            Ok(Box::new(config_data.ptr))
+//        }
+//
+//        fn readconfig<T>(filename: String) -> Result<Box<T>, &'static str> {
 //            // read the config file
-//            let file = std::fs::File::open(config)?;
-//            let config_data: Outer<T> = serde_yaml::from_reader(file)?;
-//            let a = match config_data.ptr {
+//            let config_data = readfile(filename);
+//            println!("{}", config_data);
+//
+//            match config_data {
+//                Ok(e) => {
+//                    Ok(Box::from(e))
+//                },
+//                Err(_) => {
+//                    Err("nadda")
+//                }
+//            }
+
+//            // match and return the object
+//            let result = match config_data.ptr {
 //                Ptr::Owned(e) => Ok(e),
 //                Ptr::Ref(e) => Err(":("),
 //                Ptr::Owned(_) => Err(":/")
 //            };
+//            result
 //        }
 
     }
