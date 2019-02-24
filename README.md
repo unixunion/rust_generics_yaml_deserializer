@@ -5,12 +5,14 @@ deserialize a generic.
 
 ## Dep:
 
+```toml
     [dependencies]
     generics_yaml_deserializer = { git = "https://github.com/unixunion/rust_generics_yaml_deserializer.git", branch="master" }
-    
+```
 
 ## Usage:
 
+```rust
     use crate::generics_yaml_deserializer::{Outer, Ptr};
     use serde::{de, Deserialize, Deserializer, Serialize, Serializer};
     
@@ -24,4 +26,4 @@ deserialize a generic.
         Ptr::Owned(_) => {println!("error")}
     };
     
- 
+```
