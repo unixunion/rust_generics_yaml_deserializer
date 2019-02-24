@@ -1,5 +1,8 @@
 # Generics yaml deserializer for Rust
 
+This is a work i progress, its working, but usage is ugly until I figure out why serde wont
+deserialize a generic.
+
 ## Dep:
 
     [dependencies]
