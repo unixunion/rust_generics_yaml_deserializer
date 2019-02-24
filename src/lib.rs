@@ -46,7 +46,7 @@
             let resultb: Outer<ExternalStructB> = serde_yaml::from_str(b).unwrap();
             match resultb.ptr {
                 Ptr::Owned(e) => {assert_eq!(10, e.a);},
-                Ptr::Ref(e) => {println!("error")},
+                Ptr::Ref(_) => {println!("error")},
                 Ptr::Owned(_) => {println!("error")}
             };
 //            let resultb: Outer<ExternalStructB> = serde_yaml::from_str(b).unwrap();
@@ -86,6 +86,8 @@
                 Deserialize::deserialize(deserializer).map(Ptr::Owned)
             }
         }
+
+
 
 
 //        fn readfile<T>(filename: String) -> Result<Box<T>, Box<std::error::Error>> {
