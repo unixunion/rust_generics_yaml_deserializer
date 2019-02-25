@@ -5,6 +5,7 @@
 
         use crate::generics_yaml_deserializer::{Outer, Ptr};
         use serde::{de, Deserialize, Deserializer, Serialize, Serializer};
+        use crate::generics_yaml_deserializer::readfile;
 
         #[derive(Debug, Serialize, Deserialize)]
         pub struct ExternalStructA {
@@ -24,13 +25,13 @@
 
 
             let a = r#"---
-    ptr:
+    data:
       x: 1
       y: 2
          "#;
 
             let b = r#"---
-    ptr:
+    data:
       a: 10
       b: 2
             "#;
@@ -49,6 +50,9 @@
                 Ptr::Ref(_) => {println!("error")},
                 Ptr::Owned(_) => {println!("error")}
             };
+
+//            let resultc: Box<Outer<ExternalStructA>> = readfile("ExternalStructA.yaml");
+
 //            let resultb: Outer<ExternalStructB> = serde_yaml::from_str(b).unwrap();
 //            assert_eq!(1, resultb.ptr.a);
 
@@ -63,13 +67,13 @@
         use std::error::Error;
 
         // empty holding struct which owns a owned ptr
-        #[derive(Deserialize, Debug)]
+        #[derive(Serialize, Deserialize, Debug, Clone)]
         pub struct Outer<'a, T: 'a + ?Sized> {
-            #[serde(bound(deserialize = "Ptr<'a, T>: Deserialize<'de>"))]
+            #[serde(bound(deserialize = "Ptr<'a, T>: Deserialize<'de>"), rename = "data")]
             pub ptr: Ptr<'a, T>,
         }
 
-        #[derive(Debug)]
+        #[derive(Serialize, Debug, Clone)]
         pub enum Ptr<'a, T: 'a + ?Sized> {
             Ref(&'a T),
             Owned(Box<T>),
@@ -88,7 +92,32 @@
         }
 
 
+        // filename should be &str here
+        pub fn readfile<'a, T: ?Sized>(filename: &str) -> Result<Box<Outer<'a, T>>, Box<std::error::Error>>
+            where
+                    for<'de> T: Deserialize<'de> + 'a
+        {
+            let f = std::fs::File::open(filename)?;
+            let config_data: Outer<T> = serde_yaml::from_reader(f)?;
+            Ok(Box::new(config_data))
+        }
 
+        // filename should be &str here
+        pub fn readconfig<'a, T: ?Sized>(filename: &str) -> Result<Box<Outer<'a, T>>, &'static str>
+            where
+                    for<'de> T: Deserialize<'de> + 'a
+        {
+            // read the config file
+            let config_data = readfile(filename);
+            match config_data {
+                Ok(e) => {
+                    Ok(Box::new(*e)) // need to deref the Box before reboxing
+                },
+                Err(_) => {
+                    Err("nadda")
+                }
+            }
+        }
 
 //        fn readfile<T>(filename: String) -> Result<Box<T>, Box<std::error::Error>> {
 //            let f = std::fs::File::open(filename)?;
